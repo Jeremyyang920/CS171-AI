@@ -3,9 +3,9 @@
 from collections import defaultdict
 import random
 
-team_name = "StudentAI-Default"
+team_name = "RNG"
 
-class StudentAI():
+class TeamRNGAI():
         def __init__(self, player, state):
                 self.last_move = state.get_last_move()
                 self.model = state
@@ -23,5 +23,3 @@ class StudentAI():
                 return moves[random.randint(0, len(moves) - 1)]
         def update(self):
                 self.model=self.model.clone()
-        
-# modified
