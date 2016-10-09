@@ -20,8 +20,6 @@ class StudentAI():
 
                 moves = [k for k in spaces.keys() if spaces[k] == 0]
                 self.update()
-                print(moves)
-                print (spaces)
                 return moves[random.randint(0, len(moves) - 1)]
         def update(self):
                 self.model=self.model.clone()
