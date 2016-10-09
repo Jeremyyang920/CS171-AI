@@ -3,7 +3,8 @@
 from collections import defaultdict
 import random
 
-team_name = "RNG"
+
+team_name="team_rng_ai"
 
 class TeamRNGAI():
         def __init__(self, player, state):
@@ -19,7 +20,5 @@ class TeamRNGAI():
                                 spaces[(i,j)] = self.model.pieces[i][j]
 
                 moves = [k for k in spaces.keys() if spaces[k] == 0]
-                self.update()
                 return moves[random.randint(0, len(moves) - 1)]
-        def update(self):
-                self.model=self.model.clone()
+       

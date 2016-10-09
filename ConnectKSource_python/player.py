@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from errors import InvalidFileError
 
 ai_class = "TeamRNGAI"
-ai_name = "RNG"
+ai_name = "team_name"
 
 def load_from_file(filepath):
     '''Loads an AI player from file'''
