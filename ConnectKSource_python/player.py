@@ -5,7 +5,7 @@ import os, imp
 from datetime import datetime, timedelta
 from errors import InvalidFileError
 
-ai_class = "TeamRNGAI"
+ai_class = "StudentAI"
 ai_name = "team_name"
 
 def load_from_file(filepath):
@@ -71,7 +71,7 @@ class AIPlayer(Player):
     def __init__(self, player, state, filepath):
         Player.__init__(self, player, state)
         self.aifile = load_from_file(filepath)
-        self.ai = self.aifile.TeamRNGAI(player, state)
+        self.ai = self.aifile.StudentAI(player, state)
         self.set_teamname(self.aifile.team_name)
 
     def get_move(self, state, deadline = 0):
