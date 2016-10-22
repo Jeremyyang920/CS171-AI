@@ -88,7 +88,7 @@ class StudentAI():
                         print('row:',r,'col:',c)
                         print('model:\n', str(self.model))
                         # newState = copy.deepcopy(board).place_piece((r,c), self.player)
-                        board.place_piece((0,6),self.player)
+                        board.place_piece((r,c),self.player)
                         newState=board.clone()
                         #newState = board.clone().place_piece((r,c), self.player)
                         print('model:\n', str(self.model))
