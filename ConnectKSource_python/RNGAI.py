@@ -14,6 +14,7 @@ class StudentAI():
         self.last_move = state.get_last_move()
         self.model = state
         self.player = player
+
     def make_move(self, model,deadline):
         '''Write AI Here. Return a tuple (col, row)'''
         width = self.model.get_width()
@@ -27,22 +28,26 @@ class StudentAI():
         # moves = [k for k in spaces.keys() if spaces[k] == 0]
         # return moves[random.randint(0, len(moves) - 1)]
 
-        opt = 2; depth = 3 # set AI option and depth
+        opt = 2; depth = 2 # set AI option and depth
         x,y = self.bestMove(self.model, self.player, depth = depth, opt = opt)
+        # x,y = self.bestMove(self.model, self.player)
         print(x,y)
+        # print(str(self.model))
+        print(self.getRemaining(self.model))
         return (x,y)
 
-    def EvaluateBoard(board, player):
-        return[random.randint(0,10)]
+    def EvaluateBoard(self, board, player):
+        return random.randint(0,10)
 
 
-    def getRemaining(self):
+    def getRemaining(self, board):
         spaces = defaultdict(int)
-        for i in range(self.model.get_width()):
-            for j in range(self.model.get_height()):
-                spaces[(i,j)] = self.model.get_space(i, j)
-        return spaces
-
+        for i in range(board.get_width()):
+            for j in range(board.get_height()):
+                spaces[(i,j)] = board.get_space(i, j)
+        # return spaces
+        print(spaces)
+        return [(r,c) for r in range(board.get_width()) for c in range(board.get_height()) if board.get_space(r,c) == 0]
 
     def play(self, player):
         if (player == 1):
@@ -50,49 +55,49 @@ class StudentAI():
         else:
             return 1
 
-    def minMax(self, board, player, depth, maximizing):
-        valid = self.getRemaining()
-        width = self.model.get_width()
-        height = self.model.get_height()
-        if depth == 0 or not board.has_moves_left():
-           return EvaluateBoard(board, self.player)
-        if maximizing:
-            bestVal = StudentAI.minEvalBoard
-            for r in range(height):
-               for c in range(width):
-                    if((r,c) in valid):
-                       newState = copy.deepcopy(board).place_piece((r,c), self.player)
-                       v = self.minMax(newState, self.play(self.player), depth-1, False)
-                       bestValue = max(v,bestValue)
-        else:
-            bestValue = StudentAI.maxEvalBoard
-            for r in range(height):
-                for c in range(width):
-                    if (r,c) in valid:
-                        newState = copy.deepcopy(board).place_piece((r,c), self.player)
-                        v = self.minMax(newState,self.play(self.player), depth-1, True)
-                        bestValue = min(v,bestValue)
-        return bestValue
+    # def minMax(self, board, player, depth, maximizing):
+    #     valid = self.getRemaining()
+    #     width = self.model.get_width()
+    #     height = self.model.get_height()
+    #     if depth == 0 or not board.has_moves_left():
+    #        return EvaluateBoard(board, self.player)
+    #     if maximizing:
+    #         bestVal = StudentAI.minEvalBoard
+    #         for r in range(height):
+    #            for c in range(width):
+    #                 if((r,c) in valid):
+    #                    newState = copy.deepcopy(board).place_piece((r,c), self.player)
+    #                    v = self.minMax(newState, self.play(self.player), depth-1, False)
+    #                    bestValue = max(v,bestValue)
+    #     else:
+    #         bestValue = StudentAI.maxEvalBoard
+    #         for r in range(height):
+    #             for c in range(width):
+    #                 if (r,c) in valid:
+    #                     newState = copy.deepcopy(board).place_piece((r,c), self.player)
+    #                     v = self.minMax(newState,self.play(self.player), depth-1, True)
+    #                     bestValue = min(v,bestValue)
+    #     return bestValue
 
     def alphaBeta(self, board, player, depth, alpha, beta, maximizing):
-        valid = self.getRemaining()
+        valid = self.getRemaining(board)
+        # print(sorted(valid))
+        # print(str(board))
         width = self.model.get_width()
         height = self.model.get_height()
         if depth == 0 or not board.has_moves_left():
-            return EvaluateBoard(board, self.player)
+            return self.EvaluateBoard(board, self.player)
         if maximizing:
             v = StudentAI.minEvalBoard
             for r in range(height):
                 for c in range(width):
                     if (r,c) in valid:
-                        print('row:',r,'col:',c)
-                        print('model:\n', str(self.model))
-                        # newState = copy.deepcopy(board).place_piece((r,c), self.player)
-                        board.place_piece((0,6),self.player)
-                        newState=board.clone()
-                        #newState = board.clone().place_piece((r,c), self.player)
-                        print('model:\n', str(self.model))
-                        print('new model:\n', str(newState))
+                        # print('row:',r,'col:',c)
+                        # print('board:\n', str(board))
+                        newBoard = board.clone()
+                        newState = newBoard.place_piece((r,c), self.player)
+                        # print('new model:\n', str(newState))
+                        # print(self.getRemaining(newState))
                         v = self.alphaBeta(newState, self.play(self.player), depth-1, alpha, beta, False)
                         alpha = max(alpha, v)
                         if beta <= alpha:
@@ -103,8 +108,9 @@ class StudentAI():
             for r in range(height):
                 for c in range(width):
                     if (r,c) in valid:
-                        newState = copy.deepcopy(board).place_piece((r,c), self.player)
-                        v = self.alphaBeta(newState,self.play(self.player), depth-1, alpha, beta, True)
+                        newBoard = board.clone()
+                        newState = newBoard.place_piece((r,c), self.player)
+                        v = self.alphaBeta(newState, self.play(self.player), depth-1, alpha, beta, True)
                         beta = min(beta, v)
                         if beta <= alpha:
                             break
@@ -113,22 +119,22 @@ class StudentAI():
     def bestMove(self, board, player, depth = 0, opt = 0):
         maxPoints = 0
         mx = -1; my = -1
-        valid = self.getRemaining()
+        valid = self.getRemaining(board)
         width = self.model.get_width()
         height = self.model.get_height()
         for r in range(height):
             for c in range(width):
                 if (r,c) in valid:
-                    newState = copy.deepcopy(board).place_piece((r,c), self.player)
+                    newState = board.clone().place_piece((r,c), self.player)
                     if opt == 0:
                         points = self.EvaluateBoard(newState, self.player)
                     elif opt == 1:
                         points = self.minMax(newState, self.player, depth, True)
                     elif opt == 2:
-                        points = self.alphaBeta(newState, self.player, depth, StudentAI.minEvalBoard, StudentAI.maxEvalBoard, True)
+                        points = self.alphaBeta(board, self.player, depth, StudentAI.minEvalBoard, StudentAI.maxEvalBoard, True)
                     if points > maxPoints:
                         maxPoints = points
-                        mx = x; my = y
+                        mx = r; my = c
         return (mx, my)
                     
 '''===================================

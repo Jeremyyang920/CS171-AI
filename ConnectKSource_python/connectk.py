@@ -82,6 +82,7 @@ class ConnectK():
         else:
             self.currentboard = self.currentboard.place_piece(move, self.current_player) #Update board
             print_ ("Player {} returns move {}" .format(self.current_player, str(move)))
+            print_ (str(self.currentboard))
             if (self.view is not None):
                 self.view.place_piece(self.currentboard.last_move, self.current_player)
             self.current_player = 1 if self.current_player == 2 else 2
