@@ -76,10 +76,9 @@ class AIPlayer(Player):
 
     def get_move(self, state, deadline = 0):
         result = None
-        self.ai.model = state
         if deadline == 0:
             while(result is None):
-                result = self.ai.make_move(deadline)
+                result = self.ai.make_move(state, deadline)
         else:
             result = self.get_move_with_time(state, deadline);
         self.last_move = result
@@ -87,11 +86,10 @@ class AIPlayer(Player):
 
     def get_move_with_time(self, state, deadline):
         result = None
-        self.ai.model = state
         deadline = timedelta(seconds=deadline)
         begin = datetime.now()
         while(result is None):
-            result = self.ai.make_move(deadline)
+            result = self.ai.make_move(state, deadline)
             if (datetime.now() - begin >= deadline):
                 break
         return result
