@@ -3,7 +3,7 @@ import connectK.BoardModel;
 import java.awt.Point;
 import java.util.*;
 
-
+//Testing Commit To Branch
 public class RNGAI extends CKPlayer {
 
 	public RNGAI(byte player, BoardModel state) {
