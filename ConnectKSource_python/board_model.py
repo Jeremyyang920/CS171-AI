@@ -28,8 +28,9 @@ class BoardModel():
 	def place_piece(self, location, player):
 		'''Updates the board with player moves'''
 		x, y = location
-		assert(self.pieces[x][y] == 0);
-		self.pieces[x][y]==player
+		print("piece location:", location, self.pieces[x][y])
+		assert(self.pieces[x][y] == 0)
+		self.pieces[x][y] = player
 		result_board = self.clone()
 		while (self.gravity and y > 0 and self.pieces[x][y-1] == 0):
 			y -= 1
