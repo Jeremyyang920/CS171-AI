@@ -14,7 +14,7 @@ public class RNGAI extends CKPlayer {
 	@Override
 	public Point getMove(BoardModel state)
 	{
-		Point best=bestMove(3,state,this.player);
+		Point best=bestMove(6,state,this.player);
 		return best;
 	}
 
@@ -85,7 +85,7 @@ public class RNGAI extends CKPlayer {
 				{
 					BoardModel newState = state.clone();
 					newState=newState.placePiece(new Point(r,c), player);
-					legalMoves.put(new Point(r,c), -minMax(depth-1,newState,opposite));
+					legalMoves.put(new Point(r,c), AlphaBeta(state,player,depth,Integer.MIN_VALUE,Integer.MAX_VALUE,true));
 				}
 			}
 		}
@@ -134,6 +134,57 @@ public class RNGAI extends CKPlayer {
 			alpha=Math.max(alpha, -minMax(depth-1,newState,opposite));
 		
 		return alpha;
+	}
+	
+	public int AlphaBeta(BoardModel state,byte player,int depth,int alpha,int beta,boolean maximizing)
+	{
+		ArrayList<Point> valid = getRemainingMoves(state);
+		int width=state.getWidth();
+		int height =state.getHeight();
+		if(depth==0 || valid.size()==0)
+		{
+			return EvaluateBoard2(state,player);
+		}
+		if(maximizing)
+		{
+			int bestValue=Integer.MIN_VALUE;
+			for(int r=0;r<width;r++)
+			{
+				for(int c=0;c<height;c++)
+				{
+					if(valid.contains(new Point(r,c)))
+					{
+						BoardModel newState=state.clone();
+						newState=newState.placePiece(new Point(r,c), player);
+						bestValue=Math.max(bestValue, AlphaBeta(newState,player,depth-1,alpha,beta,false));
+						alpha=Math.max(alpha,bestValue);
+						if(beta<=alpha)
+							break;
+					}
+				}
+			}
+			return bestValue;
+		}
+			else
+			{
+				int bestValue=Integer.MAX_VALUE;
+				for(int r=0;r<width;r++)
+				{
+					for(int c=0;c<height;c++)
+					{
+						if(valid.contains(new Point(r,c)))
+						{
+							BoardModel newState=state.clone();
+							newState=newState.placePiece(new Point(r,c), player);
+							bestValue=Math.max(bestValue, AlphaBeta(newState,player,depth-1,alpha,beta,true));
+							beta=Math.min(beta,bestValue);
+							if(beta<=alpha)
+								break;
+						}
+					}
+				}
+				return bestValue;
+			}
 	}
 	
 	public int EvaluateBoard2(BoardModel state,byte player)
