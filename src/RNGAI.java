@@ -3,10 +3,21 @@ import connectK.BoardModel;
 import java.awt.Point;
 import java.util.*;
 
+public class Pair<X,Y> {
+	public final X first;
+	public final Y second;
+	public Pair(X first, Y second)
+	{
+		this.first = first;
+		this.second= second;
+	}
+}
+
 //Testing Commit To Branch
 public class RNGAI extends CKPlayer {
 
-	public RNGAI(byte player, BoardModel state) {
+	public RNGAI(byte player, BoardModel state)
+	{
 		super(player, state);
 		teamName = "RNGAI";
 	}
@@ -21,12 +32,10 @@ public class RNGAI extends CKPlayer {
 	@Override
 	public Point getMove(BoardModel state, int deadline) 
 	{
-		
 		return getMove(state);
 	}
 	
-	
-	public byte oppositePlater(byte currentPlayer)
+	public byte oppositePlayer(byte currentPlayer)
 	{
 		if(currentPlayer==1)
 			return 2;
@@ -62,11 +71,120 @@ public class RNGAI extends CKPlayer {
 		}
 		return remainingMoves;
 	}
+
+	public ArraryList<ArrayList<byte>> forwardDiagonals(BoardModel state)
+	{
+		ArrayList<ArrayList<byte>> result = new ArrayList<ArrayList<byte>>();
+		ArrayList<byte> temp = new ArrayList<byte>();
+		int h = state.getHeight();
+		int w = state.getWidth();
+		for (int p = 0; p < h+w-1; p++)
+		{
+			for (int q = Math.min(p, h-1); q > Math.max(0, p-w+1)-1; q--)
+				temp.add(board.pieces[h-1-q][p-q]);
+			result.add(temp);
+		}
+		return result;
+	}
+
+	public ArraryList<ArrayList<byte>> backwardDiagonals(BoardModel state)
+	{
+		ArrayList<ArrayList<byte>> result = new ArrayList<ArrayList<byte>>();
+		ArrayList<byte> temp = new ArrayList<byte>();
+		int h = state.getHeight();
+		int w = state.getWidth();
+		for (int p = 0; p < h+w-1; p++)
+		{
+			for (int q = Math.min(p, h-1); q > Math.max(0, p-w+1)-1; q--)
+				temp.add(board.pieces[q][p-q]);
+			result.add(temp);
+		}
+		return result;
+	}
+
+	public ArrayList<ArrayList<byte>> getRows(BoardModel state)
+	{
+		ArrayList<ArrayList<byte>> result = new ArrayList<ArrayList<byte>>();
+		ArrayList<byte> temp = new ArrayList<byte>();
+		for (int r = 0; r < state.getWidth(); r++)
+		{
+			for (int c = 0; c < state.getHeight(); c++)
+				temp.add(board.pieces[r][c]);
+			result.add(temp);
+		}
+		return result;
+	}
+
+	public ArrayList<ArrayList<byte>> getCols(BoardModel state)
+	{
+		ArrayList<ArrayList<byte>> result = new ArrayList<ArrayList<byte>>();
+		ArrayList<byte> temp = new ArrayList<byte>();
+		for (int c = 0; c < state.getHeight(); c++)
+		{
+			for (int r = 0; r < state.getWidth(); r++)
+				temp.add(board.pieces[r][c]);
+			result.add(temp);
+		}
+		return result;
+	}
+
+	public ArrayList<Pair<byte,Integer>> groupby(ArrayList<byte> array)
+	{
+		ArrayList<Pair<byte,Integer>> result = new ArrayList<Pair<byte,Integer>>();
+		byte prev = array[0], current = prev;
+		int count = 0;
+		for (int i = 1; i < array.length(); i++)
+		{
+			current = array[i];
+			if (current == prev)
+				count++;
+			else
+			{
+				result.add( Pair(prev, count) );
+				count = 1;
+				prev = current;
+			}
+		}
+		if (current == prev)
+			result.add ( Pair(prev, count) );
+		return result;
+	}
 	
 	public int EvaluateBoard(BoardModel state, byte player)
 	{
-		Random rand = new Random();
-		return rand.nextInt(101);
+		// Random rand = new Random();
+		// return rand.nextInt(101);
+		HashMap<byte, HashMap<Integer, Integer>> result = new HashMap<byte, HashMap<Integer, Integer>>();
+		for (ArrayList<byte> diagonal : forwardDiagonals(state))
+			for (Pair<byte,Integer> pair : groupby(diagonal))
+				result[pair.first][pair.second] += 1
+		for (ArrayList<byte> diagonal : backwardDiagonals(state))
+			for (Pair<byte,Integer> pair : groupby(diagonal))
+				result[pair.first][pair.second] += 1
+		for (ArrayList<byte> row : getRows(state))
+			for (Pair<byte,Integer> pair : groupby(row))
+				result[pair.first][pair.second] += 1
+		for (ArrayList<byte> col : getCols(state))
+			for (Pair<byte,Integer> pair : groupby(col))
+				result[pair.first][pair.second] += 1
+
+		byte opposite = (byte) ((player == 1) ? 2:1);
+		if (result[player][state.k_length] != 0)
+			return Integer.MAX_VALUE;
+		else if (result[opposite][state.k)length] != 0)
+			return Integer.MIN_VALUE;
+
+		ArrayList<Integer> weights = new ArrayList<Integer>();
+		for (int i = 0; i < state.k_length; i++)
+			weights.add( Math.pow(10, i) )
+
+		int player_sum = 0, opposite_player_sum = 0;
+
+		for (int key : result[player].keySet())
+			player_sum += result[player][key] * weights[key];
+		for (int key : result[opposite].keySet())
+			opposite_player_sum += result[opposite][key] * weights[key];
+		return player_sum - opposite_player_sum;
 	}
 	
 	public Point bestMove(int depth,BoardModel state, byte player)
