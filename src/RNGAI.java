@@ -155,31 +155,42 @@ public class RNGAI extends CKPlayer {
 	{
 		// Random rand = new Random();
 		// return rand.nextInt(101);
-		HashMap<Byte, HashMap<Integer, Integer>> result = new HashMap<Byte, HashMap<Integer, Integer>>();
+		HashMap<Byte, Pair<Integer, Integer>> result = new HashMap<Byte, Pair<Integer, Integer>>();
 		for (ArrayList<Byte> diagonal : forwardDiagonals(state))
 			for (Pair<Byte,Integer> pair : groupby(diagonal))
-				if()
-				result.put(pair.first, )
-				result[pair.first][pair.second] += 1;
+				if(result.containsKey(pair.first))
+					result.put(pair.first, new Pair(pair.second,result.get(pair.first).second+1));
+				else
+					result.put(pair.first, new Pair(pair.second,1));
+				
 		for (ArrayList<Byte> diagonal : backwardDiagonals(state))
 			for (Pair<Byte,Integer> pair : groupby(diagonal))
-				result[pair.first][pair.second] += 1;
+				if(result.containsKey(pair.first))
+					result.put(pair.first, new Pair(pair.second,result.get(pair.first).second+1));
+				else
+					result.put(pair.first, new Pair(pair.second,1));
 		for (ArrayList<Byte> row : getRows(state))
 			for (Pair<Byte,Integer> pair : groupby(row))
-				result[pair.first][pair.second] += 1;
+				if(result.containsKey(pair.first))
+					result.put(pair.first, new Pair(pair.second,result.get(pair.first).second+1));
+				else
+					result.put(pair.first, new Pair(pair.second,1));
 		for (ArrayList<Byte> col : getCols(state))
 			for (Pair<Byte,Integer> pair : groupby(col))
-				result[pair.first][pair.second] += 1;
+				if(result.containsKey(pair.first))
+					result.put(pair.first, new Pair(pair.second,result.get(pair.first).second+1));
+				else
+					result.put(pair.first, new Pair(pair.second,1));
 
 		byte opposite = (byte) ((player == 1) ? 2:1);
-		if (result[player][state.k_length] != 0)
+		if(result.get(player).second!=0)
 			return Integer.MAX_VALUE;
-		else if (result[opposite][state.k_length] != 0)
+		else if (result[opposite][state.klength] != 0)
 			return Integer.MIN_VALUE;
 
 		ArrayList<Integer> weights = new ArrayList<Integer>();
-		for (int i = 0; i < state.k_length; i++)
-			weights.add( Math.pow(10, i) );
+		for (int i = 0; i < state.kLength; i++)
+			weights.add( (int) Math.pow(10, i) );
 
 		int player_sum = 0, opposite_player_sum = 0;
 
